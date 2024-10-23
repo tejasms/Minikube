@@ -1,0 +1,14 @@
+kubernetesClusterDomain: cluster.local
+pgadmin:
+  pgadmin:
+    env:
+      pgadminDefaultEmail: postgres@postgres.com
+      pgadminDefaultPassword: postgres
+    image:
+      repository: elestio/pgadmin
+      tag: latest
+  ports:
+  - port: 5050
+    targetPort: 80
+  replicas: 1
+  type: NodePort

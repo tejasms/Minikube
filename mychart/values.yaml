@@ -1,0 +1,47 @@
+app:
+  app:
+    env:
+      awsAccessKeyId: AKIAWH7AYUPPRZKGOLTI
+      awsDefaultRegion: us-east-1
+      awsSecretAccessKey: 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
+      prodDbHostname: postgres
+      prodDbName: postgres
+      prodDbPassword: postgres
+      prodDbUsername: postgres
+    image:
+      repository: tejumasha/mininode
+      tag: latest
+  ports:
+  - nodePort: 30009
+    port: 3000
+    targetPort: 3000
+  replicas: 1
+  type: NodePort
+gadmin:
+  pgadmin:
+    env:
+      pgadminDefaultEmail: postgres@postgres.com
+      pgadminDefaultPassword: postgres
+    image:
+      repository: elestio/pgadmin
+      tag: latest
+  ports:
+  - port: 5050
+    targetPort: 80
+  replicas: 1
+  type: NodePort
+kubernetesClusterDomain: cluster.local
+ostgres:
+  ports:
+  - port: 5432
+    targetPort: 5432
+  postgres:
+    env:
+      postgresDb: postgres
+      postgresPassword: postgres
+      postgresUser: postgres
+    image:
+      repository: postgres
+      tag: latest
+  replicas: 1
+  type: NodePort

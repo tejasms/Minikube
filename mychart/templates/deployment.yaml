@@ -1,0 +1,114 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "mychart.fullname" . }}-app
+  labels:
+  {{- include "mychart.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": post-install
+spec:
+  replicas: {{ .Values.app.replicas }}
+  selector:
+    matchLabels:
+      app: app
+    {{- include "mychart.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app: app
+      {{- include "mychart.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - env:
+        - name: PROD_DB_NAME
+          value: {{ quote .Values.app.app.env.prodDbName }}
+        - name: PROD_DB_USERNAME
+          value: {{ quote .Values.app.app.env.prodDbUsername }}
+        - name: PROD_DB_PASSWORD
+          value: {{ quote .Values.app.app.env.prodDbPassword }}
+        - name: PROD_DB_HOSTNAME
+          value: {{ quote .Values.app.app.env.prodDbHostname }}
+        - name: AWS_ACCESS_KEY_ID
+          value: {{ quote .Values.app.app.env.awsAccessKeyId }}
+        - name: AWS_SECRET_ACCESS_KEY
+          value: {{ quote .Values.app.app.env.awsSecretAccessKey }}
+        - name: AWS_DEFAULT_REGION
+          value: {{ quote .Values.app.app.env.awsDefaultRegion }}
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        image: {{ .Values.app.app.image.repository }}:{{ .Values.app.app.image.tag | default
+          .Chart.AppVersion }}
+        name: app
+        ports:
+        - containerPort: 3000
+        resources: {}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "mychart.fullname" . }}-gadmin
+  labels:
+  {{- include "mychart.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.gadmin.replicas }}
+  selector:
+    matchLabels:
+      app: pgadmin
+    {{- include "mychart.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app: pgadmin
+      {{- include "mychart.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - env:
+        - name: PGADMIN_DEFAULT_EMAIL
+          value: {{ quote .Values.gadmin.pgadmin.env.pgadminDefaultEmail }}
+        - name: PGADMIN_DEFAULT_PASSWORD
+          value: {{ quote .Values.gadmin.pgadmin.env.pgadminDefaultPassword }}
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        image: {{ .Values.gadmin.pgadmin.image.repository }}:{{ .Values.gadmin.pgadmin.image.tag
+          | default .Chart.AppVersion }}
+        name: pgadmin
+        ports:
+        - containerPort: 80
+        resources: {}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "mychart.fullname" . }}-ostgres
+  labels:
+  {{- include "mychart.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": pre-install
+spec:
+  replicas: {{ .Values.ostgres.replicas }}
+  selector:
+    matchLabels:
+      app: postgres
+    {{- include "mychart.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app: postgres
+      {{- include "mychart.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - env:
+        - name: POSTGRES_DB
+          value: {{ quote .Values.ostgres.postgres.env.postgresDb }}
+        - name: POSTGRES_USER
+          value: {{ quote .Values.ostgres.postgres.env.postgresUser }}
+        - name: POSTGRES_PASSWORD
+          value: {{ quote .Values.ostgres.postgres.env.postgresPassword }}
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        image: {{ .Values.ostgres.postgres.image.repository }}:{{ .Values.ostgres.postgres.image.tag
+          | default .Chart.AppVersion }}
+        name: postgres
+        ports:
+        - containerPort: 5432
+        resources: {}

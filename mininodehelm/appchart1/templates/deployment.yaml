@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "appchart1.fullname" . }}-app
+  labels:
+  {{- include "appchart1.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.app.replicas }}
+  selector:
+    matchLabels:
+      app: app
+    {{- include "appchart1.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app: app
+      {{- include "appchart1.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - env:
+        - name: PROD_DB_NAME
+          value: {{ quote .Values.app.app.env.prodDbName }}
+        - name: PROD_DB_USERNAME
+          value: {{ quote .Values.app.app.env.prodDbUsername }}
+        - name: PROD_DB_PASSWORD
+          value: {{ quote .Values.app.app.env.prodDbPassword }}
+        - name: PROD_DB_HOSTNAME
+          value: {{ quote .Values.app.app.env.prodDbHostname }}
+        - name: AWS_ACCESS_KEY_ID
+          value: {{ quote .Values.app.app.env.awsAccessKeyId }}
+        - name: AWS_SECRET_ACCESS_KEY
+          value: {{ quote .Values.app.app.env.awsSecretAccessKey }}
+        - name: AWS_DEFAULT_REGION
+          value: {{ quote .Values.app.app.env.awsDefaultRegion }}
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        image: {{ .Values.app.app.image.repository }}:{{ .Values.app.app.image.tag | default
+          .Chart.AppVersion }}
+        name: app
+        ports:
+        - containerPort: 3000
+        resources: {}

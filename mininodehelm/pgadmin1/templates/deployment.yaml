@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "pgadmin1.fullname" . }}-pgadmin
+  labels:
+  {{- include "pgadmin1.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.pgadmin.replicas }}
+  selector:
+    matchLabels:
+      app: pgadmin
+    {{- include "pgadmin1.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app: pgadmin
+      {{- include "pgadmin1.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - env:
+        - name: PGADMIN_DEFAULT_EMAIL
+          value: {{ quote .Values.pgadmin.pgadmin.env.pgadminDefaultEmail }}
+        - name: PGADMIN_DEFAULT_PASSWORD
+          value: {{ quote .Values.pgadmin.pgadmin.env.pgadminDefaultPassword }}
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        image: {{ .Values.pgadmin.pgadmin.image.repository }}:{{ .Values.pgadmin.pgadmin.image.tag
+          | default .Chart.AppVersion }}
+        name: pgadmin
+        ports:
+        - containerPort: 80
+        resources: {}

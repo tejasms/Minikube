@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+        - name: app
+          image: tejumasha/mininode
+          env:
+            - name: PROD_DB_NAME
+              value: "postgres"
+            - name: PROD_DB_USERNAME
+              value: "postgres"
+            - name: PROD_DB_PASSWORD
+              value: "postgres"
+            - name: PROD_DB_HOSTNAME
+              value: "postgres"  
+            - name: AWS_ACCESS_KEY_ID
+              value: "AKIAWH7AYUPPRZKGOLTI" 
+            - name: AWS_SECRET_ACCESS_KEY
+              value: "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"  
+            - name: AWS_DEFAULT_REGION
+              value: "us-east-1"
+          ports:
+            - containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app
+spec:
+  type: NodePort
+  ports:
+    - port: 3000
+      targetPort: 3000
+      nodePort: 30009   
+  selector:
+    app: app
+

@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "mychart.fullname" . }}-ostgres
+  labels:
+  {{- include "mychart.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.ostgres.type }}
+  selector:
+    app: postgres
+  {{- include "mychart.selectorLabels" . | nindent 4 }}
+  ports:
+	{{- .Values.ostgres.ports | toYaml | nindent 2 }}

@@ -1,0 +1,15 @@
+kubernetesClusterDomain: cluster.local
+postgres:
+  ports:
+  - port: 5432
+    targetPort: 5432
+  postgres:
+    env:
+      postgresDb: postgres
+      postgresPassword: postgres
+      postgresUser: postgres
+    image:
+      repository: postgres
+      tag: latest
+  replicas: 1
+  type: NodePort
