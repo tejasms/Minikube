@@ -24,12 +24,7 @@ spec:
               value: "postgres"
             - name: PROD_DB_HOSTNAME
               value: "postgres"  
-            - name: AWS_ACCESS_KEY_ID
-              value: "AKIAWH7AYUPPRZKGOLTI" 
-            - name: AWS_SECRET_ACCESS_KEY
-              value: "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"  
-            - name: AWS_DEFAULT_REGION
-              value: "us-east-1"
+            
           ports:
             - containerPort: 3000
 ---
